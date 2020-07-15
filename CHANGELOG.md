@@ -1,8 +1,10 @@
 # Change log
 
+
 ## Master (Unreleased)
 
 * Add a new base cop class `::RuboCop::Cop::RSpec::Base`. The old base class `::RuboCop::Cop::RSpec::Cop` is deprecated, and will be removed in the next major release. ([@bquorning][])
+* Remove deprecated class `::RuboCop::Cop::RSpec::Cop`. ([@bquorning][])
 
 ## 1.42.0 (2020-07-09)
 
