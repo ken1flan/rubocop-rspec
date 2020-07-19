@@ -29,6 +29,8 @@ module RuboCop
                                .map(&Regexp.public_method(:new))
         )
 
+        exclude_from_registry
+
         # Invoke the original inherited hook so our cops are recognized
         def self.inherited(subclass)
           RuboCop::Cop::Base.inherited(subclass)
