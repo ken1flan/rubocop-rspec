@@ -8,6 +8,7 @@
 * Add `IgnoredMetadata` configuration option to `RSpec/DescribeClass`. ([@Rafix02][])
 * Fix false positives in `RSpec/EmptyExampleGroup`. ([@pirj][])
 * Fix a false positive for `RSpec/EmptyExampleGroup` when example is defined in an `if` branch. ([@koic][])
+* Change from `Prefixes` to `Patterns` in `ContextWording` configuration. ([@ken1flan][]
 
 ## 1.43.2 (2020-08-25)
 

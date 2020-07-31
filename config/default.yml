@@ -63,14 +63,14 @@ RSpec/ContextMethod:
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/ContextMethod
 
 RSpec/ContextWording:
-  Description: Checks that `context` docstring starts with an allowed prefix.
+  Description: Checks that `context` docstring matches an allowed pattern.
   Enabled: true
-  Prefixes:
-  - when
-  - with
-  - without
+  Patterns:
+  - ^when\b
+  - ^with\b
+  - ^without\b
   VersionAdded: '1.20'
-  VersionChanged: 1.20.1
+  VersionChanged: 1.43.3
   StyleGuide: https://www.rubydoc.info/gems/rubocop-rspec/RuboCop/Cop/RSpec/ContextWording
 
 RSpec/DescribeClass:

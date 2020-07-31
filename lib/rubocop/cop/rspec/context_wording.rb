@@ -3,26 +3,26 @@
 module RuboCop
   module Cop
     module RSpec
-      # Checks that `context` docstring starts with an allowed prefix.
+      # Checks that `context` docstring matches an allowed pattern.
       #
       # The default list of prefixes is minimal. Users are encouraged to tailor
-      # the configuration to meet project needs. Other acceptable prefixes may
-      # include `if`, `unless`, `for`, `before`, `after`, or `during`.
+      # the configuration to meet project needs. Other acceptable patterns may
+      # include `^if`, `^unless`, `^for`, `^before`, `^after`, or `^during`.
       #
       # @see https://rspec.rubystyle.guide/#context-descriptions
       # @see http://www.betterspecs.org/#contexts
       #
-      # @example `Prefixes` configuration
+      # @example `Patterns` configuration
       #
       #   # .rubocop.yml
       #   # RSpec/ContextWording:
-      #   #   Prefixes:
-      #   #     - when
-      #   #     - with
-      #   #     - without
-      #   #     - if
-      #   #     - unless
-      #   #     - for
+      #   #   Patterns:
+      #   #     - ^when\s
+      #   #     - ^with\s
+      #   #     - ^without\s
+      #   #     - ^if\s
+      #   #     - ^unless\s
+      #   #     - ^for\s
       #
       # @example
       #   # bad
@@ -35,31 +35,50 @@ module RuboCop
       #     # ...
       #   end
       class ContextWording < Base
-        MSG = 'Start context description with %<prefixes>s.'
+        MSG = 'Write context description like %<patterns>s.'
+
+        DEPRECATED_KEY = 'Prefixes'
+        DEPRECATION_WARNING =
+          "Configuration key `#{DEPRECATED_KEY}` for #{cop_name} is " \
+          'deprecated in favor of `Patterns`. Please use that instead.'
 
         def_node_matcher :context_wording, <<-PATTERN
-          (block (send #rspec? { :context :shared_context } $(str #bad_prefix?) ...) ...)
+          (block (send #rspec? { :context :shared_context } $(str #bad_pattern?) ...) ...)
         PATTERN
 
         def on_block(node)
           context_wording(node) do |context|
             add_offense(context,
-                        message: format(MSG, prefixes: joined_prefixes))
+                        message: format(MSG, patterns: joined_patterns))
           end
         end
 
         private
 
-        def bad_prefix?(description)
-          !prefixes.include?(description.split(/\b/).first)
+        def bad_pattern?(description)
+          !united_pattern.match?(description)
         end
 
-        def joined_prefixes
-          quoted = prefixes.map { |prefix| "'#{prefix}'" }
+        def joined_patterns
+          quoted = patterns.map { |pattern| "'#{pattern}'" }
           return quoted.first if quoted.size == 1
 
           quoted << "or #{quoted.pop}"
           quoted.join(', ')
+        end
+
+        def united_pattern
+          p = patterns.map { |str| Regexp.new(str) }
+          @united_pattern ||= Regexp.union(p)
+        end
+
+        def patterns
+          ((cop_config['Patterns'] || []) + prefix_patterns).uniq
+        end
+
+        def prefix_patterns
+          warn DEPRECATION_WARNING unless prefixes.empty?
+          prefixes.map { |prefix| "^#{prefix}\\b" }
         end
 
         def prefixes
